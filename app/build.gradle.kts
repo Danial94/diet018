@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.google.services)
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore)
+    implementation(files("libs/zDefend.aar"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

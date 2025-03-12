@@ -1,5 +1,7 @@
 package com.dev.diet018
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,10 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(auth: FirebaseAuth, navController: NavController) {
+fun DashboardScreen(auth: FirebaseAuth, db: FirebaseFirestore, navController: NavController) {
+    read(db)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -48,4 +53,17 @@ fun DashboardScreen(auth: FirebaseAuth, navController: NavController) {
 fun logout(auth: FirebaseAuth, navController: NavController) {
     auth.signOut()
     navController.navigate("login")
+}
+
+fun read(db: FirebaseFirestore) {
+    db.collection("diet_info")
+        .get()
+        .addOnSuccessListener { result ->
+            for (document in result) {
+                Log.d(TAG, "${document.id} => ${document.data}")
+            }
+        }
+        .addOnFailureListener { exception ->
+            Log.w(TAG, "Error getting documents.", exception)
+        }
 }

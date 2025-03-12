@@ -1,9 +1,6 @@
 package com.dev.diet018
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.navigation.NavHostController
@@ -14,14 +11,19 @@ import com.dev.diet018.ui.theme.Diet018Theme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
     private lateinit var navController: NavHostController
+    private lateinit var zDefendManager: ZDefendManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Initialize Firebase Auth
         auth = Firebase.auth
+        db = Firebase.firestore
+        zDefendManager = ZDefendManager.shared
 
         super.onCreate(savedInstanceState)
         setContent {
@@ -30,15 +32,25 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") { LoginScreen(auth, navController) }
                     composable("register") { RegisterScreen(auth, navController) }
-                    composable("dashboard") { DashboardScreen(auth, navController) }
+                    composable("dashboard") { DashboardScreen(auth, db, navController) }
+                    composable("zimperium") { ZimperiumScreen(zDefendManager, navController) }
                 }
 
                 val currentUser = auth.currentUser
                 if (currentUser != null) {
-                    navController.navigate("dashboard")
+                    navController.navigate("zimperium")
                 }
             }
         }
     }
-}
 
+    override fun onStart() {
+        super.onStart()
+        zDefendManager.initializeZDefendApi()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        zDefendManager.deregisterZDefendApi()
+    }
+}
