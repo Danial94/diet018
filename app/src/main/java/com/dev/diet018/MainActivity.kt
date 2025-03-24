@@ -33,7 +33,14 @@ class MainActivity : ComponentActivity() {
                     composable("login") { LoginScreen(auth, navController) }
                     composable("register") { RegisterScreen(auth, navController) }
                     composable("dashboard") { DashboardScreen(auth, db, navController) }
-                    composable("zimperium") { ZimperiumScreen(zDefendManager, navController) }
+                    composable("zimperium") { ZimperiumScreen(auth, zDefendManager, navController) }
+                    composable("main") { MainScreen(auth, zDefendManager, navController) }
+                    composable("threats") { ThreatsScreen(zDefendManager, navController) }
+                    composable("policies") { PolicyScreen(zDefendManager, navController) }
+                    composable("troubleshoot") { TroubleshootScreen(zDefendManager, navController) }
+                    composable("simulate") { SimulateScreen(zDefendManager, navController) }
+                    composable("audit") { AuditScreen(zDefendManager, navController) }
+                    composable("linked") { LinkedScreen(zDefendManager, navController) }
                 }
 
                 val currentUser = auth.currentUser

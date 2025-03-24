@@ -50,11 +50,6 @@ fun DashboardScreen(auth: FirebaseAuth, db: FirebaseFirestore, navController: Na
     }
 }
 
-fun logout(auth: FirebaseAuth, navController: NavController) {
-    auth.signOut()
-    navController.navigate("login")
-}
-
 fun read(db: FirebaseFirestore) {
     db.collection("diet_info")
         .get()

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.dev.diet018
 
 import androidx.compose.foundation.layout.*
@@ -11,55 +13,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun ZimperiumScreen(zDefendManager: ZDefendManager, navController: NavController) {
-    AppNavigation(zDefendManager);
-
-//    private val zDefendManager : ZDefendManager = ZDefendManager.shared
-//
-//    // Dummy database connection
-//    private val databaseConnectionString: String = "Server=10.10.0.27;Database=main;User Id=danial;Password=1234;"
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContent {
-//            TrafficLikeTheme {
-//                AppNavigation(zDefendManager)
-//            }
-//        }
-//    }
-//
-//    override fun onStart() {
-//        super.onStart()
-//        zDefendManager.initializeZDefendApi()
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        zDefendManager.deregisterZDefendApi()
-//    }
-}
-
-@Composable
-fun AppNavigation(zDefendManager: ZDefendManager) {
+fun ZimperiumScreen(auth: FirebaseAuth, zDefendManager: ZDefendManager, navController: NavController) {
     if (zDefendManager.isLoaded.value) {
-        val navController = rememberNavController()
-        NavHost(navController, startDestination = "main") {
-            composable("main") { MainScreen(zDefendManager, navController) }
-            composable("threats") { ThreatsScreen(zDefendManager, navController) }
-            composable("policies") { PolicyScreen(zDefendManager, navController) }
-            composable("troubleshoot") { TroubleshootScreen(zDefendManager, navController) }
-            composable("simulate") { SimulateScreen(zDefendManager, navController) }
-            composable("audit") { AuditScreen(zDefendManager, navController) }
-            composable("linked") { LinkedScreen(zDefendManager, navController) }
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("ZDefend") },
+                    actions = {
+                        IconButton(onClick = { zDefendManager.checkForUpdates() }) {
+                            Icon(Icons.Default.Refresh, contentDescription = "updates")
+                        }
+                        TextButton(onClick = { logout(auth, navController) }) {
+                            Text("Logout", style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                )
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                NavigationGrid(navController)
+            }
         }
     } else {
         Column(
@@ -69,36 +52,36 @@ fun AppNavigation(zDefendManager: ZDefendManager) {
         ) {
             Text("Scan progress %: " + zDefendManager.percentage.intValue)
             for (audit in zDefendManager.auditLogs) {
-                Text(text = audit)
+                Text(text = audit, fontSize = 11.sp)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(zDefendManager: ZDefendManager, navController: NavController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Header(zDefendManager)
-        NavigationGrid(navController)
-    }
-}
-
-@Composable
-fun Header(zDefendManager: ZDefendManager) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { zDefendManager.checkForUpdates() }) {
-            Icon(Icons.Default.Refresh, contentDescription = "updates")
+fun MainScreen(auth: FirebaseAuth, zDefendManager: ZDefendManager, navController: NavController) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("ZDefend") },
+                actions = {
+                    IconButton(onClick = { zDefendManager.checkForUpdates() }) {
+                        Icon(Icons.Default.Refresh, contentDescription = "updates")
+                    }
+                    TextButton(onClick = { logout(auth, navController) }) {
+                        Text("Logout", style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            )
         }
-        Text(
-            text = "ZDefend",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+        ) {
+            NavigationGrid(navController)
+        }
     }
 }
 
@@ -147,4 +130,9 @@ fun NavigationCard(text: String, modifier: Modifier = Modifier, onClick: () -> U
             )
         }
     }
+}
+
+fun logout(auth: FirebaseAuth, navController: NavController) {
+    auth.signOut()
+    navController.navigate("login")
 }
