@@ -50,7 +50,8 @@ fun RegisterScreen(auth: FirebaseAuth, navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
             // Name Input Field

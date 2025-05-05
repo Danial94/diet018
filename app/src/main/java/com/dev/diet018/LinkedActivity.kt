@@ -18,117 +18,118 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LinkedScreen(zDefendManager: ZDefendManager, navController: NavController) {
     val textState = remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-            Text(
-                text = "Linked",
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Linked") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
+    ) { innerPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .background(Color.LightGray)
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
         ) {
-            if (textState.value.isEmpty()) {
-                Text(
-                    text = "Enter Function Label",
-                    fontSize = 30.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-
-            BasicTextField(
-                value = textState.value,
-                onValueChange = { textState.value = it },
-                textStyle = TextStyle(fontSize = 30.sp),
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp)
-                    .padding(8.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    zDefendManager.registerLinkedFunction(textState.value)
-                    textState.value = ""
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                    .background(Color.LightGray)
             ) {
-                Text(text = "Register", color = Color.White)
-            }
-            Button(
-                onClick = {
-                    zDefendManager.deregisterAllLinkedFunction()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
-            ) {
-                Text(text = "Unregister", color = Color.White)
-            }
-        }
+                if (textState.value.isEmpty()) {
+                    Text(
+                        text = "Enter Function Label",
+                        fontSize = 30.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(zDefendManager.linkedObjects) { linked ->
-                Card(
+                BasicTextField(
+                    value = textState.value,
+                    onValueChange = { textState.value = it },
+                    textStyle = TextStyle(fontSize = 30.sp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp)
+                        .height(44.dp)
+                        .padding(8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Button(
+                    onClick = {
+                        zDefendManager.registerLinkedFunction(textState.value)
+                        textState.value = ""
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(text = linked.label, fontSize = 18.sp)
-                            Text(text = "${linked.threats.count()}", fontSize = 18.sp)
+                    Text(text = "Register", color = Color.White)
+                }
+                Button(
+                    onClick = {
+                        zDefendManager.deregisterAllLinkedFunction()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(text = "Unregister", color = Color.White)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(zDefendManager.linkedObjects) { linked ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = linked.label, fontSize = 18.sp)
+                                Text(text = "${linked.threats.count()}", fontSize = 18.sp)
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(text = linked.eventType, fontSize = 10.sp)
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = linked.eventType, fontSize = 10.sp)
                     }
                 }
             }

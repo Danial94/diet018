@@ -51,7 +51,8 @@ fun LoginScreen(auth: FirebaseAuth, navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
             // Email Input Field

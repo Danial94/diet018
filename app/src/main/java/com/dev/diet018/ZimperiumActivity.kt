@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.dev.diet018
 
 import androidx.compose.foundation.layout.*
@@ -18,6 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ZimperiumScreen(auth: FirebaseAuth, zDefendManager: ZDefendManager, navController: NavController) {
     if (zDefendManager.isLoaded.value) {
@@ -40,6 +39,7 @@ fun ZimperiumScreen(auth: FirebaseAuth, zDefendManager: ZDefendManager, navContr
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .padding(16.dp)
             ) {
                 NavigationGrid(navController)
             }
@@ -120,7 +120,6 @@ fun NavigationCard(text: String, modifier: Modifier = Modifier, onClick: () -> U
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .fillMaxSize()
                 .padding(16.dp)
         ) {
             Text(
