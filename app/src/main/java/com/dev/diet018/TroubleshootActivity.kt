@@ -9,6 +9,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -50,15 +51,13 @@ fun TroubleshootScreen(zDefendManager: ZDefendManager, navController: NavControl
         ) {
             TabRow(
                 selectedTabIndex = selectedTabIndex,
-                modifier = Modifier.background(Color.White),
                 indicator = { tabPositions ->
                     TabRowDefaults.SecondaryIndicator(
                         Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
-                        color = Color.Blue
+                        color = MaterialTheme.colorScheme.primary
                     )
                 },
-                containerColor = Color.White,
-                contentColor = Color.Blue
+                contentColor = MaterialTheme.colorScheme.primary
             ) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
@@ -67,12 +66,12 @@ fun TroubleshootScreen(zDefendManager: ZDefendManager, navController: NavControl
                         text = {
                             Text(
                                 title,
-                                color = if (selectedTabIndex == index) Color.Blue else Color.Gray,
+                                color = if (selectedTabIndex == index) MaterialTheme.colorScheme.primary else Color.Gray,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp
                             )
                         },
-                        selectedContentColor = Color.Blue,
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
                         unselectedContentColor = Color.Gray
                     )
                 }

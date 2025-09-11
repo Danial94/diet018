@@ -86,12 +86,11 @@ fun ExpandableCard(
             .padding(vertical = 4.dp),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-//        onClick = onCardArrowClick
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -131,8 +130,9 @@ fun ExpandableCard(
                 Text(
                     text = threat.resolution,
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
+                threat.id // USD Debugging ID is 44
             }
         }
     }

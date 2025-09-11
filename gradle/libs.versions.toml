@@ -19,6 +19,8 @@ googleServices = "4.4.2"
 firebaseAnalytics = "22.1.2"
 firebaseFirestore = "25.1.1"
 mpandroidchart = "v3.1.0"
+integrity = "1.4.0"
+playServicesSafetynet = "18.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -46,6 +48,8 @@ google-services = { group = "com.google.gms", name = "google-services", version.
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
+integrity = { group = "com.google.android.play", name = "integrity", version.ref = "integrity" }
+play-services-safetynet = { group = "com.google.android.gms", name = "play-services-safetynet", version.ref = "playServicesSafetynet" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

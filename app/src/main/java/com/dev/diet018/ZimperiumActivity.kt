@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -93,7 +92,8 @@ fun NavigationGrid(navController: NavController) {
         Pair("Troubleshoot", "troubleshoot"),
         Pair("Simulate", "simulate"),
         Pair("Audit", "audit"),
-        Pair("Linked", "linked")
+        Pair("Linked", "linked"),
+        Pair("Status", "status")
     )
 
     LazyColumn {
@@ -110,7 +110,7 @@ fun NavigationCard(text: String, modifier: Modifier = Modifier, onClick: () -> U
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Blue),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
@@ -124,8 +124,7 @@ fun NavigationCard(text: String, modifier: Modifier = Modifier, onClick: () -> U
         ) {
             Text(
                 text = text,
-                fontSize = 14.sp,
-                color = Color.White
+                fontSize = 14.sp
             )
         }
     }

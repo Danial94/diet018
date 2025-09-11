@@ -3,6 +3,10 @@ package com.dev.diet018
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +32,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Diet018Theme {
+                val showAlert by zDefendManager.showAlert
+                val alertMsg by zDefendManager.alertMessage
+
+                if (showAlert) {
+                    AlertDialog(
+                        onDismissRequest = { zDefendManager.showAlert.value = false },
+                        title = { Text("Security Alert") },
+                        text = { Text(alertMsg) },
+                        confirmButton = {
+                            TextButton(onClick = { zDefendManager.showAlert.value = false }) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
+
                 navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") { LoginScreen(auth, navController) }
@@ -41,6 +61,7 @@ class MainActivity : ComponentActivity() {
                     composable("simulate") { SimulateScreen(zDefendManager, navController) }
                     composable("audit") { AuditScreen(zDefendManager, navController) }
                     composable("linked") { LinkedScreen(zDefendManager, navController) }
+                    composable("status") { StatusScreen(zDefendManager, navController) }
                 }
 
                 val currentUser = auth.currentUser

@@ -57,6 +57,8 @@ dependencies {
     implementation(libs.google.services)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
+    implementation(libs.integrity)
+    implementation(libs.play.services.safetynet)
     implementation(files("libs/zDefend.aar"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
