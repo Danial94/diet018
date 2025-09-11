@@ -56,6 +56,7 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
     var percentage = mutableIntStateOf(0)
 
     var showAlert = mutableStateOf(false)
+    var alertId = mutableIntStateOf(0)
     var alertMessage = mutableStateOf("")
 
     companion object {
@@ -77,6 +78,16 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
         }
 
         auditLogs.add("ZDefendManager - getThreats()")
+    }
+
+    fun addThreat(threat: ZDefendThreat) {
+        threats.add(ThreatModel(
+            threat.uuid,
+            threat.localizedName,
+            threat.severity.name,
+            threat.isMitigated,
+            threat.localizedDetails,
+            threat.localizedResolution))
     }
 
     fun getPolicies() {
@@ -130,15 +141,13 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
     }
 
     fun deregisterAllLinkedFunction() {
-        for (function in registeredFunctions) {
-            function.deregister()
-        }
-
+        for (function in registeredFunctions) function.deregister()
         registeredFunctions.clear()
         linkedObjects.clear()
         auditLogs.add("ZDefendManager - deregisterAllLinkedFunction()")
     }
 
+    // Function runs when the first threat of the same label is being mitigated
     private fun onLinkedFunction(event: ZLinkedFunctionEvent) {
         val threats = event.relatedThreats.map { threat ->
             ThreatModel(
@@ -154,14 +163,15 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
         linked?.eventType = event.eventType.toString()
         linked?.threats = threats
 
+        var message = ""
         if (event.label == "alert") {
-            var message = ""
             event.relatedThreats.forEach { threat ->
-                val packageName = if (threat.packageName != "") threat.packageName else "-"
-                val malwareName = if (threat.malwareName != "") threat.malwareName else "-"
-                message += "New Threat: ${threat.localizedName}\n${(packageName)}\n${malwareName}\n\n"
+                message += "${threat.localizedName} (${threat.internalThreatID}): ${(threat.appName)}\n"
+                alertId.intValue = threat.internalThreatID
             }
+        }
 
+        if (alertId.intValue > 0) {
             alertMessage.value = message
             showAlert.value = true
         }
@@ -169,32 +179,16 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
         auditLogs.add("ZDefendManager - onLinkedFunction(${event.label})")
     }
 
+    // Function runs when the last threat of the same label is being mitigated
     private fun onMitigateFunction(event: ZLinkedFunctionEvent) {
         if (event.label == "alert") {
-            var message = event.relatedThreats.count().toString()
-            event.relatedThreats.forEach { threat ->
-                val packageName = if (threat.packageName != "") threat.packageName else "-"
-                val malwareName = if (threat.malwareName != "") threat.malwareName else "-"
-                message += "Threat Mitigated: ${threat.localizedName}\n${(packageName)}\n${malwareName}\n\n"
-            }
-
-            alertMessage.value = message
-            showAlert.value = true
+            alertId.intValue = 0
         }
 
         auditLogs.add("ZDefendManager - onMitigateFunction(${event.label})")
     }
 
-    private fun addThreat(threat: ZDefendThreat) {
-        threats.add(ThreatModel(
-            threat.uuid,
-            threat.localizedName,
-            threat.severity.name,
-            threat.isMitigated,
-            threat.localizedDetails,
-            threat.localizedResolution))
-    }
-
+    // Function runs on all activity lifecycle
     override fun onDeviceStatus(deviceStatus: ZDeviceStatus) {
         val logBuilder = StringBuilder()
         logBuilder.append("OnDeviceStatus: ").append(deviceStatus.loginStatus.name)
@@ -213,19 +207,26 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
         lastDeviceStatus = deviceStatus
         auditLogs.add("onDeviceStatus: $logBuilder")
 
+        var message = ""
+        deviceStatus.activeThreats.forEach { threat ->
+            if (alertId.intValue == threat.internalThreatID) {
+                message += "${threat.localizedName} (${threat.internalThreatID}): ${(threat.appName)}\n"
+                auditLogs.add(threat.json.toString())
+            }
+        }
+
         deviceStatus.activeNewThreats.forEach { threat ->
-            val malwareName = if (threat.malwareName != "") threat.malwareName else "-"
-            val packageName = if (threat.packageName != "") threat.packageName else "-"
-            statusLogs.add("New Threats: ${threat.localizedName}\n${malwareName}\n${packageName}")
+            statusLogs.add("New Threats (${threat.internalThreatID}): ${threat.localizedName}\n${threat.appName}\n")
         }
 
         deviceStatus.mitigatedNewThreats.forEach { threat ->
-            val malwareName = if (threat.malwareName != "") threat.malwareName else "-"
-            val packageName = if (threat.packageName != "") threat.packageName else "-"
-            statusLogs.add("New Mitigation: ${threat.localizedName}\n${(malwareName)}\n${packageName}")
+            statusLogs.add("New Mitigation (${threat.internalThreatID}): ${threat.localizedName}\n${(threat.appName)}\n")
         }
 
-        showAlert.value = true
+        if (alertId.intValue > 0) {
+            alertMessage.value = message
+            showAlert.value = true
+        }
     }
 
     override fun onZLog(message: String) {
