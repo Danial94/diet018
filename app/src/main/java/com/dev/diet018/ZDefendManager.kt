@@ -148,6 +148,9 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
     }
 
     // Function runs when the first threat of the same label is being mitigated
+    // Label : high_threat -> Malware - first detection - RUN
+    // Label : high_threat -> Screen Sharing - second detection - NO ACTION
+    // Label : low_threat -> Screen Sharing - first detection - RUN
     private fun onLinkedFunction(event: ZLinkedFunctionEvent) {
         val threats = event.relatedThreats.map { threat ->
             ThreatModel(
@@ -188,7 +191,7 @@ class ZDefendManager : ZDeviceStatusCallback, ZLogCallback, TroubleshootDetailsC
         auditLogs.add("ZDefendManager - onMitigateFunction(${event.label})")
     }
 
-    // Function runs on all activity lifecycle
+    // Run Function on all life cycle, onStart, onResume, onAppBackground
     override fun onDeviceStatus(deviceStatus: ZDeviceStatus) {
         val logBuilder = StringBuilder()
         logBuilder.append("OnDeviceStatus: ").append(deviceStatus.loginStatus.name)
